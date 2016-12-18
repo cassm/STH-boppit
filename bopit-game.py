@@ -1,5 +1,5 @@
 #/bin/python
-#bopit remote code - teamHnnnng
+#bopit game code - teamHnnnng
 #comments are the documentation >.>
 
 #imports - gpio, time for pwm, serial because serial
@@ -8,6 +8,8 @@ import time as time
 import serial as serial 
 # pygame - for sounds
 import pygame
+# random for randomness
+import random
 
 #init audio
 pygame.mixer.init()
@@ -42,7 +44,9 @@ flick = 'F'
 spin = 'S'
 bop1 = '1'
 bop2 = '2'
+bop = (bop1,bop2)
 
+options = (twist,pull,flick,spin,bop)
 
 
 # Start your engines please
@@ -51,62 +55,54 @@ pwm2.ChangeDutyCycle(0)
 pattern = 0
 freq = 50.0
 
-# Next, a disgusting while command to read the buffer continously
 buf = ''
+
+#game code:
+#twist, pull, bop1 p1
+#flick, spin, bop2 p2
 while 1:
-    buf += ser.read(1)
-    if buf == twist:
-        # twist it = pattern change
-	freq = freq * 2
-	pwm1.ChangeFrequency(freq) 
-	pwm2.ChangeFrequency(freq) 
+  action = random.randint(0,4)
+  if action == 0:
         pygame.mixer.music.load("twistit.wav")
 	pygame.mixer.music.play()
-        buf = ''
-    if buf == flick:
-        # amplitude up
-	dc = dc + 10 
-        pwm1.ChangeDutyCycle(dc)
-        pwm2.ChangeDutyCycle(dc)
+  elif action == 1: 
+        pygame.mixer.music.load("pullit.wav")
+	pygame.mixer.music.play()
+  elif action == 2:
         pygame.mixer.music.load("flickit.wav")
 	pygame.mixer.music.play()
-        buf = ''
-    if buf == spin:
-        freq = freq / 2
-	pwm1.ChangeFrequency(freq) 
-	pwm2.ChangeFrequency(freq) 
+  elif action == 3:
         pygame.mixer.music.load("spinit.wav")
 	pygame.mixer.music.play()
-        buf = ''
-    if buf == bop1:
-        # bop it = stop it
-        dc = 0
-	freq = 50.0
-        pwm1.ChangeDutyCycle(0)
-        pwm2.ChangeDutyCycle(0)
-	pwm1.ChangeFrequency(freq) 
-	pwm2.ChangeFrequency(freq) 
+  else:
         pygame.mixer.music.load("bopit.wav")
 	pygame.mixer.music.play()
-
+                          
+# Next, a disgusting while command to read the buffer continously
+  while 1:
+    buf += ser.read(1)
+    if action == 4:
+        if buf == bop1:
+           freq = freq * 2
+           pwm1.ChangeFrequency(freq)
+           break
+        elif buf == bop1:
+           freq = freq * 2
+           pwm1.ChangeFrequency(freq)
+           break
+    elif buf == options[action]:
+        # twist it = pattern change
+	dc = dc + 10
+	pwm1.ChangeDutyCycle(dc) 
+	pwm2.ChangeDutyCycle(dc) 
         buf = ''
-    if buf == bop2:
-        # bop it = stop it
+ 	break
+    elif buf != '': 
         dc = 0
         freq = 50
         pwm1.ChangeDutyCycle(0)
         pwm2.ChangeDutyCycle(0)
 	pwm1.ChangeFrequency(freq) 
 	pwm2.ChangeFrequency(freq) 
-        pygame.mixer.music.load("bopit.wav")
-	pygame.mixer.music.play()
         buf = ''
-    elif buf == pull:
-        # pull it -> speed down
-	dc = dc - 10 
-        pwm1.ChangeDutyCycle(dc)
-        pwm2.ChangeDutyCycle(dc)
-        pygame.mixer.music.load("pullit.wav")
-	pygame.mixer.music.play()
-        buf = ''
-
+	break
