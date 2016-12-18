@@ -16,7 +16,7 @@ pygame.mixer.init()
 
 #define pin layouts as we'd expect the board to look - https://pinout.xyz/
 GPIO.setmode(GPIO.BOARD)
-
+dc = 40
 #we'll take pin 40 for vibe 1
 GPIO.setup(40, GPIO.OUT)
 pwm1 = GPIO.PWM(40, 50)
