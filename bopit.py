@@ -27,8 +27,8 @@ pwm2 = GPIO.PWM(38, 50)
 # however this code is running on a pi2 and as this is being written in a
 # hackathon, so I'm not going to write code identifying host device today. 
 ser = serial.Serial(              
-      port='/dev/ttyAMA0',
-      baudrate = 9600,
+      port='/dev/ttyUSB0',
+      baudrate = 115200,
       parity=serial.PARITY_NONE,
       stopbits=serial.STOPBITS_ONE,
       bytesize=serial.EIGHTBITS,
@@ -46,10 +46,14 @@ bop2 = '2'
 
 
 # Start your engines please
+pwm1.start(0)
+pwm2.start(0)
 pwm1.ChangeDutyCycle(0)
 pwm2.ChangeDutyCycle(0) 
+
 pattern = 0
 freq = 50.0
+dc = 0
 
 # Next, a disgusting while command to read the buffer continously
 buf = ''
@@ -62,14 +66,17 @@ while 1:
 	pwm2.ChangeFrequency(freq) 
         pygame.mixer.music.load("twistit.wav")
 	pygame.mixer.music.play()
+        print buf
         buf = ''
     if buf == flick:
         # amplitude up
-	dc = dc + 10 
+        if dc < 91: 
+ 	 dc = dc + 10 
         pwm1.ChangeDutyCycle(dc)
         pwm2.ChangeDutyCycle(dc)
         pygame.mixer.music.load("flickit.wav")
 	pygame.mixer.music.play()
+        print buf
         buf = ''
     if buf == spin:
         freq = freq / 2
@@ -77,6 +84,7 @@ while 1:
 	pwm2.ChangeFrequency(freq) 
         pygame.mixer.music.load("spinit.wav")
 	pygame.mixer.music.play()
+        print buf
         buf = ''
     if buf == bop1:
         # bop it = stop it
@@ -88,6 +96,7 @@ while 1:
 	pwm2.ChangeFrequency(freq) 
         pygame.mixer.music.load("bopit.wav")
 	pygame.mixer.music.play()
+        print buf
 
         buf = ''
     if buf == bop2:
@@ -100,13 +109,16 @@ while 1:
 	pwm2.ChangeFrequency(freq) 
         pygame.mixer.music.load("bopit.wav")
 	pygame.mixer.music.play()
+        print buf
         buf = ''
     elif buf == pull:
         # pull it -> speed down
-	dc = dc - 10 
+	if dc > 9:
+           dc = dc - 10 
         pwm1.ChangeDutyCycle(dc)
         pwm2.ChangeDutyCycle(dc)
         pygame.mixer.music.load("pullit.wav")
 	pygame.mixer.music.play()
+        print buf
         buf = ''
 

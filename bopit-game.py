@@ -29,8 +29,8 @@ pwm2 = GPIO.PWM(38, 50)
 # however this code is running on a pi2 and as this is being written in a
 # hackathon, so I'm not going to write code identifying host device today. 
 ser = serial.Serial(              
-      port='/dev/ttyAMA0',
-      baudrate = 9600,
+      port='/dev/ttyUSB0',
+      baudrate = 115200,
       parity=serial.PARITY_NONE,
       stopbits=serial.STOPBITS_ONE,
       bytesize=serial.EIGHTBITS,
@@ -50,8 +50,10 @@ options = (twist,pull,flick,spin,bop)
 
 
 # Start your engines please
-pwm1.ChangeDutyCycle(0)
-pwm2.ChangeDutyCycle(0) 
+pwm1.start(0)
+pwm2.start(0)
+pwm1.ChangeDutyCycle(40) 
+pwm2.ChangeDutyCycle(40) 
 pattern = 0
 freq = 50.0
 
@@ -65,18 +67,23 @@ while 1:
   if action == 0:
         pygame.mixer.music.load("twistit.wav")
 	pygame.mixer.music.play()
+        print options[action]
   elif action == 1: 
         pygame.mixer.music.load("pullit.wav")
 	pygame.mixer.music.play()
+        print options[action]
   elif action == 2:
         pygame.mixer.music.load("flickit.wav")
 	pygame.mixer.music.play()
+        print options[action]
   elif action == 3:
         pygame.mixer.music.load("spinit.wav")
 	pygame.mixer.music.play()
+        print options[action]
   else:
         pygame.mixer.music.load("bopit.wav")
 	pygame.mixer.music.play()
+        print options[action]
                           
 # Next, a disgusting while command to read the buffer continously
   while 1:
@@ -92,7 +99,8 @@ while 1:
            break
     elif buf == options[action]:
         # twist it = pattern change
-	dc = dc + 10
+	if dc < 91:
+         dc = dc + 10
 	pwm1.ChangeDutyCycle(dc) 
 	pwm2.ChangeDutyCycle(dc) 
         buf = ''
